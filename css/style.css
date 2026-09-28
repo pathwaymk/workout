@@ -525,6 +525,9 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .routine-header-row {
@@ -532,11 +535,14 @@ button:active {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
+  width: 100%;
 }
 
 .routine-input-wrap {
   flex: 1;
   position: relative;
+  min-width: 0;
 }
 
 .routine-name-input {
@@ -550,6 +556,7 @@ button:active {
   color: var(--text-main);
   outline: none;
   transition: border-color 0.2s;
+  min-width: 0;
 }
 
 .routine-name-input:focus {
@@ -568,6 +575,10 @@ button:active {
   overflow-x: auto;
   padding-bottom: 4px;
   scrollbar-width: none;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .routine-presets-wrap::-webkit-scrollbar {
@@ -684,12 +695,14 @@ input:checked + .slider:before {
   justify-content: space-between;
   margin-bottom: 14px;
   padding: 0 4px;
+  gap: 10px;
 }
 
 .section-title-wrap {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-width: 0;
 }
 
 .section-icon-badge {
@@ -699,6 +712,7 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .section-icon-badge.strength {
@@ -711,10 +725,18 @@ input:checked + .slider:before {
   color: var(--cardio);
 }
 
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .section-title {
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: -0.01em;
+  margin: 0;
 }
 
 .section-count-badge {
@@ -722,12 +744,21 @@ input:checked + .slider:before {
   font-weight: 700;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
   color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .btn-primary-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--primary), #0284c7);
   color: #ffffff;
   font-size: 0.85rem;
@@ -736,6 +767,8 @@ input:checked + .slider:before {
   border-radius: var(--radius-md);
   gap: 6px;
   box-shadow: 0 2px 8px var(--primary-glow);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-primary-add:hover {
@@ -743,6 +776,9 @@ input:checked + .slider:before {
 }
 
 .btn-cardio-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--cardio), #ea580c);
   color: #ffffff;
   font-size: 0.85rem;
@@ -751,6 +787,8 @@ input:checked + .slider:before {
   border-radius: var(--radius-md);
   gap: 6px;
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Exercise Cards */
@@ -1913,5 +1951,70 @@ input:checked + .slider:before {
 
   .nav-item.active svg {
     transform: none;
+  }
+}
+
+/* ==========================================================================
+   Mobile Header & Button Responsive Enhancements (<= 600px)
+   ========================================================================== */
+@media (max-width: 600px) {
+  /* Section Header mobile optimizations */
+  .section-header {
+    align-items: center;
+    gap: 8px;
+    padding: 0 2px;
+  }
+
+  .section-title-wrap {
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .section-icon-badge {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  .section-title-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .section-title {
+    font-size: 1.02rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .section-count-badge {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    line-height: 1.2;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Remove the + icon from Add Exercise and Add Cardio button ONLY on mobile */
+  .section-header .btn-primary-add svg,
+  .section-header .btn-cardio-add svg {
+    display: none !important;
+  }
+
+  .section-header .btn-primary-add,
+  .section-header .btn-cardio-add {
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    gap: 0;
+    box-shadow: none;
   }
 }
