@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FitPulse">
+  <meta name="description" content="Personal offline-first workout and cardio tracker running entirely on local storage.">
+
+  <title>FitPulse - Workout & Cardio Tracker</title>
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top App Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <a href="#" class="logo-area" id="brand-logo-btn">
+          <img src="icons/icon.svg" alt="FitPulse Logo" class="app-logo-icon">
+          <span class="logo-text">FitPulse</span>
+        </a>
+
+        <div class="header-actions">
+          <button type="button" class="btn-pwa-install hidden" id="btn-pwa-install" aria-label="Install App">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Install App</span>
+          </button>
+
+          <button type="button" class="btn-icon" id="btn-header-export-day" title="Export Workout (JSON)" aria-label="Export Workout (JSON)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+
+          <button type="button" class="btn-icon" id="btn-quick-theme" title="Toggle Theme" aria-label="Toggle Theme">
+            <svg id="theme-icon-sun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <svg id="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+	<br>
+    <!-- Navigation Bar (Desktop top / Mobile bottom) -->
+    <nav class="nav-bar" id="main-nav">
+      <button type="button" class="nav-item active" data-tab="tab-log">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+          <line x1="9" y1="8" x2="15" y2="8"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+        <span>Daily Log</span>
+      </button>
+
+      <button type="button" class="nav-item" data-tab="tab-history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>Calendar</span>
+      </button>
+
+      <button type="button" class="nav-item" data-tab="tab-stats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 20V10"/>
+          <path d="M12 20V4"/>
+          <path d="M6 20v-6"/>
+        </svg>
+        <span>Progress</span>
+      </button>
+
+      <button type="button" class="nav-item" data-tab="tab-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: DAILY WORKOUT LOG                   -->
+    <!-- ========================================== -->
+    <main id="tab-log" class="tab-content active">
+      <!-- Date Navigator -->
+      <section class="date-navigator">
+        <div class="date-controls-row">
+          <button type="button" class="date-nav-btn" id="btn-prev-day" title="Previous Day" aria-label="Previous Day">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          <div class="date-center-wrap">
+            <input type="date" id="date-picker-input" class="date-input-hidden">
+            <button type="button" class="date-display-trigger" id="btn-date-trigger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span id="date-display-text">Loading date...</span>
+            </button>
+            <button type="button" class="btn-today-pill" id="btn-go-today">Today</button>
+          </div>
+
+          <button type="button" class="date-nav-btn" id="btn-next-day" title="Next Day" aria-label="Next Day">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="date-navigator-sub-row">
+          <button type="button" class="btn-export-day-pill" id="btn-export-day" title="Export this day's workout as JSON">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span id="export-day-btn-label">Export Workout (JSON)</span>
+          </button>
+
+          <div class="save-indicator" id="save-status-indicator">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span id="save-status-text">Saved to device</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Daily Stats Glance Strip -->
+      <section class="daily-stats-grid">
+        <div class="stat-chip accent-cyan">
+          <span class="stat-chip-label">Exercises</span>
+          <span class="stat-chip-val" id="stat-exercises-count">0</span>
+        </div>
+        <div class="stat-chip accent-emerald">
+          <span class="stat-chip-label">Sets Done</span>
+          <span class="stat-chip-val" id="stat-sets-completed">0 / 0</span>
+        </div>
+        <div class="stat-chip accent-orange">
+          <span class="stat-chip-label">Cardio</span>
+          <span class="stat-chip-val" id="stat-cardio-mins">0 min</span>
+        </div>
+        <div class="stat-chip accent-purple">
+          <span class="stat-chip-label">Est. Calories</span>
+          <span class="stat-chip-val" id="stat-cardio-cals">0 kcal</span>
+        </div>
+      </section>
+
+      <!-- Routine Name & Rest Day Configuration -->
+      <section class="routine-config-card">
+        <div class="routine-header-row">
+          <div class="routine-input-wrap">
+            <input type="text" id="routine-name-input" class="routine-name-input" placeholder="Routine Name (e.g. Push Day, Leg Blast)..." autocomplete="off">
+          </div>
+          <label class="rest-day-toggle-label" title="Mark this date as a rest / recovery day">
+            <span>Rest Day</span>
+            <div class="switch">
+              <input type="checkbox" id="rest-day-checkbox">
+              <span class="slider"></span>
+            </div>
+          </label>
+        </div>
+
+        <div class="routine-presets-wrap">
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Quick Fill:</span>
+          <button type="button" class="preset-chip" data-routine="Push Day (Chest, Shoulders, Triceps)">Push Day</button>
+          <button type="button" class="preset-chip" data-routine="Pull Day (Back & Biceps)">Pull Day</button>
+          <button type="button" class="preset-chip" data-routine="Leg Day (Quads, Hamstrings, Calves)">Leg Day</button>
+          <button type="button" class="preset-chip" data-routine="Upper Body Workout">Upper Body</button>
+          <button type="button" class="preset-chip" data-routine="Full Body Compound">Full Body</button>
+          <button type="button" class="preset-chip" data-routine="Cardio & Core Conditioning">Cardio & Abs</button>
+          <button type="button" class="preset-chip" data-routine="Active Recovery & Mobility">Mobility</button>
+        </div>
+      </section>
+
+      <!-- Rest Day Card (Displayed when Rest Day is toggled on) -->
+      <div id="rest-day-banner" class="rest-day-card hidden">
+        <div class="rest-day-icon">🧘‍♂️</div>
+        <h3 class="rest-day-title">Rest & Recovery Day</h3>
+        <p class="rest-day-desc">Muscle grows during rest! Hydrate well, prioritize sleep, do light stretching or mobility drills, and hit your protein target.</p>
+        <button type="button" class="btn-secondary" id="btn-unmark-rest">Log a workout instead</button>
+      </div>
+
+      <!-- Main Workout Content (hidden when rest day) -->
+      <div id="workout-content-sections">
+        <!-- 1. STRENGTH & RESISTANCE SECTION -->
+        <section class="strength-section">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-badge strength">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 5.57 14.14 14.14 5.57 17.71 9.14 19.14 7.71 20.57 9.14 22 7.71 19.86 5.57z"/>
+                </svg>
+              </div>
+              <h2 class="section-title">Strength & Resistance</h2>
+              <span class="section-count-badge" id="strength-count-badge">0 exercises</span>
+            </div>
+
+            <button type="button" class="btn-primary-add" id="btn-open-exercise-picker">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>Add Exercise</span>
+            </button>
+          </div>
+
+          <!-- List of exercises -->
+          <div class="exercises-list" id="exercises-list-container">
+            <!-- Dynamic exercise cards populated by JS -->
+          </div>
+
+          <!-- Empty State for Exercises -->
+          <div class="empty-state-box hidden" id="exercises-empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="7" width="20" height="10" rx="2"/>
+              <path d="M6 7V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/>
+            </svg>
+            <div class="empty-title">No exercises logged today</div>
+            <p class="empty-desc">Tap "Add Exercise" to record your sets, weights, and repetitions.</p>
+            <button type="button" class="btn-primary-add" id="btn-empty-add-exercise" style="margin-top: 6px;">
+              + Add First Exercise
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. CARDIO SECTION -->
+        <section class="cardio-section" style="margin-top: 30px;">
+          <div class="section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-badge cardio">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <h2 class="section-title">Cardio Training</h2>
+              <span class="section-count-badge" id="cardio-count-badge">0 sessions</span>
+            </div>
+
+            <button type="button" class="btn-cardio-add" id="btn-add-cardio-session">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>Add Cardio</span>
+            </button>
+          </div>
+
+          <!-- List of cardio sessions -->
+          <div class="cardio-list" id="cardio-list-container">
+            <!-- Dynamic cardio cards populated by JS -->
+          </div>
+
+          <!-- Empty State for Cardio -->
+          <div class="empty-state-box hidden" id="cardio-empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+            <div class="empty-title">No cardio recorded today</div>
+            <p class="empty-desc">Log running, cycling, rowing, HIIT, or walking with duration and distance.</p>
+            <button type="button" class="btn-cardio-add" id="btn-empty-add-cardio" style="margin-top: 6px;">
+              + Add Cardio Session
+            </button>
+          </div>
+        </section>
+
+        <!-- 3. RECOVERY & NOTES SECTION -->
+        <section class="recovery-card" style="margin-top: 30px;">
+          <h3 style="font-size: 1rem; font-weight: 800;">Daily Notes & Recovery</h3>
+          <div class="recovery-row">
+            <div>
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">ENERGY LEVEL</span>
+              <div class="energy-stars-wrap" id="energy-stars-selector">
+                <button type="button" class="star-btn" data-val="1" title="1 - Exhausted">⚡</button>
+                <button type="button" class="star-btn" data-val="2" title="2 - Low Energy">⚡</button>
+                <button type="button" class="star-btn" data-val="3" title="3 - Moderate">⚡</button>
+                <button type="button" class="star-btn" data-val="4" title="4 - High Energy">⚡</button>
+                <button type="button" class="star-btn" data-val="5" title="5 - Peak Performance">⚡</button>
+              </div>
+            </div>
+
+            <div class="bodyweight-input-wrap">
+              <div>
+                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">BODYWEIGHT</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="number" step="0.1" id="daily-bodyweight-input" class="bodyweight-input" placeholder="0.0">
+                  <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);" class="unit-label-weight">kg</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">WORKOUT REFLECTION & NOTES</span>
+            <textarea id="daily-notes-textarea" class="daily-notes-textarea" placeholder="How did the workout feel? Any personal records or muscle soreness?"></textarea>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: CALENDAR & WORKOUT HISTORY          -->
+    <!-- ========================================== -->
+    <section id="tab-history" class="tab-content">
+      <div class="calendar-card">
+        <div class="calendar-month-header">
+          <button type="button" class="btn-icon" id="cal-prev-month" title="Previous Month">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2 class="calendar-month-title" id="cal-month-title">September 2026</h2>
+          <button type="button" class="btn-icon" id="cal-next-month" title="Next Month">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <div class="calendar-grid" id="calendar-days-grid">
+          <!-- Calendar cells rendered by JS -->
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 14px; font-size: 0.75rem; color: var(--text-secondary);">
+          <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot strength"></span> Strength</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot cardio"></span> Cardio</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot rest"></span> Rest Day</span>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3 class="section-title">Past Workout Log</h3>
+      </div>
+      <div class="history-timeline" id="history-timeline-container">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: STATS & PROGRESS TRACKER            -->
+    <!-- ========================================== -->
+    <section id="tab-stats" class="tab-content">
+      <div class="stats-overview-grid">
+        <div class="stat-big-card">
+          <span class="stat-big-label">🔥 Current Streak</span>
+          <span class="stat-big-val" id="stats-streak-val">0 Days</span>
+        </div>
+        <div class="stat-big-card">
+          <span class="stat-big-label">🏋️ Total Workouts</span>
+          <span class="stat-big-val" id="stats-workouts-val">0</span>
+        </div>
+        <div class="stat-big-card">
+          <span class="stat-big-label">✅ Completed Sets</span>
+          <span class="stat-big-val" id="stats-sets-val">0</span>
+        </div>
+        <div class="stat-big-card">
+          <span class="stat-big-label">⚡ Weight Volume</span>
+          <span class="stat-big-val" id="stats-volume-val">0 <span style="font-size: 1rem;" class="unit-label-weight">kg</span></span>
+        </div>
+        <div class="stat-big-card">
+          <span class="stat-big-label">🏃 Total Cardio</span>
+          <span class="stat-big-val" id="stats-cardio-time-val">0 hrs</span>
+        </div>
+        <div class="stat-big-card">
+          <span class="stat-big-label">🔥 Total Calories</span>
+          <span class="stat-big-val" id="stats-calories-val">0 kcal</span>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top: 24px;">
+        <div class="section-title-wrap">
+          <h3 class="section-title">🏆 Personal Records (PRs)</h3>
+        </div>
+      </div>
+      <div class="prs-list" id="personal-records-container">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: SETTINGS & DATA BACKUP              -->
+    <!-- ========================================== -->
+    <section id="tab-settings" class="tab-content">
+      <div class="settings-group">
+        <div class="settings-group-title">Preferences</div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Weight Unit</div>
+            <div class="setting-desc">Kilograms or Pounds for barbell/dumbbell weights</div>
+          </div>
+          <div class="segmented-control" id="control-weight-unit">
+            <button type="button" class="segmented-btn active" data-unit="kg">KG</button>
+            <button type="button" class="segmented-btn" data-unit="lbs">LBS</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Distance Unit</div>
+            <div class="setting-desc">Kilometers or Miles for cardio runs/cycling</div>
+          </div>
+          <div class="segmented-control" id="control-distance-unit">
+            <button type="button" class="segmented-btn active" data-unit="km">KM</button>
+            <button type="button" class="segmented-btn" data-unit="mi">MI</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Default Rest Timer</div>
+            <div class="setting-desc">Countdown between exercise sets</div>
+          </div>
+          <div class="segmented-control" id="control-rest-seconds">
+            <button type="button" class="segmented-btn" data-rest="30">30s</button>
+            <button type="button" class="segmented-btn active" data-rest="60">60s</button>
+            <button type="button" class="segmented-btn" data-rest="90">90s</button>
+            <button type="button" class="segmented-btn" data-rest="120">120s</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Appearance</div>
+            <div class="setting-desc">Dark slate or clean light theme</div>
+          </div>
+          <div class="segmented-control" id="control-theme">
+            <button type="button" class="segmented-btn active" data-theme-val="dark">Dark</button>
+            <button type="button" class="segmented-btn" data-theme-val="light">Light</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Audio & Vibration</div>
+            <div class="setting-desc">Sound and haptic cues on rest timer countdown</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="setting-sound-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Local Storage & Backup</div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">
+          All workout data is kept 100% offline inside your browser's Local Storage. Export a JSON backup periodically to keep your fitness logs safe.
+        </p>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+          <button type="button" class="btn-secondary" id="btn-export-backup">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Export Backup (JSON)</span>
+          </button>
+
+          <button type="button" class="btn-secondary" id="btn-import-trigger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Import Backup (JSON)</span>
+          </button>
+          <input type="file" id="file-import-input" accept=".json,application/json" class="hidden">
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Data Management</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary" id="btn-load-sample-data">
+            Load Sample Workout Routine
+          </button>
+          <button type="button" class="btn-danger" id="btn-clear-all-data">
+            Clear All Data
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EXERCISE PICKER                     -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="modal-exercise-picker">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Select Exercise</h3>
+        <button type="button" class="btn-icon" id="btn-close-picker-modal" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="search-input-wrap">
+          <svg class="search-icon-pos" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="exercise-search-input" class="modal-search-input" placeholder="Search exercises (e.g. Bench, Squat, Curl)..." autocomplete="off">
+        </div>
+
+        <div class="filter-chips-row" id="muscle-filter-chips">
+          <button type="button" class="filter-chip active" data-muscle="ALL">All</button>
+          <button type="button" class="filter-chip" data-muscle="Chest">Chest</button>
+          <button type="button" class="filter-chip" data-muscle="Back">Back</button>
+          <button type="button" class="filter-chip" data-muscle="Legs">Legs</button>
+          <button type="button" class="filter-chip" data-muscle="Shoulders">Shoulders</button>
+          <button type="button" class="filter-chip" data-muscle="Arms">Arms</button>
+          <button type="button" class="filter-chip" data-muscle="Core">Core</button>
+        </div>
+
+        <div class="exercise-pick-list" id="modal-exercise-list">
+          <!-- Exercise items populated by JS -->
+        </div>
+
+        <div class="custom-add-section">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Can't find it? Add Custom Exercise:</span>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="custom-exercise-name-input" class="routine-name-input" style="font-size: 0.9rem; padding: 8px 10px;" placeholder="Custom exercise name...">
+            <select id="custom-exercise-muscle-select" class="cardio-type-select" style="flex: initial; width: 110px; font-size: 0.85rem; padding: 6px 8px;">
+              <option value="Chest">Chest</option>
+              <option value="Back">Back</option>
+              <option value="Legs">Legs</option>
+              <option value="Shoulders">Shoulders</option>
+              <option value="Arms">Arms</option>
+              <option value="Core">Core</option>
+              <option value="Full Body">Full Body</option>
+              <option value="Other">Other</option>
+            </select>
+            <button type="button" class="btn-primary-add" id="btn-save-custom-exercise">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EXPORT DAY WORKOUT (JSON)           -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="modal-export-day">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Export Workout (JSON)</h3>
+          <span style="font-size: 0.78rem; color: var(--text-secondary);" id="export-modal-subtitle">Today's Workout</span>
+        </div>
+        <button type="button" class="btn-icon" id="btn-close-export-modal" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="export-actions-bar">
+          <button type="button" class="btn-primary-add" id="btn-download-day-json">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Download JSON File</span>
+          </button>
+
+          <button type="button" class="btn-secondary" id="btn-copy-day-json">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span id="copy-json-btn-text">Copy to Clipboard</span>
+          </button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">JSON PREVIEW</span>
+          <pre class="json-preview-code" id="export-day-json-preview"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast" id="app-toast">Notification message</div>
+
+  <!-- Application Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
